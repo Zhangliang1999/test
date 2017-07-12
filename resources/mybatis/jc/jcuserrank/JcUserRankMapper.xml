@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jy.repository.jc.jcuserrank.JcUserRankDao">
+    <resultMap id="BaseResultMap" type="JcUserRank">
+        <result column="issue" property="issue" jdbcType="VARCHAR"/>
+        <result column="user_id" property="userId" jdbcType="VARCHAR"/>
+        <result column="type" property="type" jdbcType="INTEGER"/>
+        <result column="profit_rate" property="profitRate" jdbcType="DECIMAL"/>
+        <result column="win_count" property="winCount" jdbcType="INTEGER"/>
+        <result column="lose_count" property="loseCount" jdbcType="INTEGER"/>
+        <result column="star" property="star" jdbcType="INTEGER"/>
+        <result column="attention_count" property="attentionCount" jdbcType="INTEGER"/>
+    </resultMap>
+    <select id="find" resultMap="BaseResultMap" parameterType="JcUserRank">
+        select * from jc_user_rank where 1=1
+        <if test="issue != null">
+            and issue=#{issue}
+        </if>
+        <if test="type != null">
+          and type=#{type}
+        </if>
+        order by issue
+    </select>
+    <select id="findByPage" resultMap="BaseResultMap" parameterType="JcUserRank">
+        select * from jc_user_rank where 1=1
+        <if test="param.type != null">
+            and type=#{param.type}
+        </if>
+        <if test="param.keyWord != null">
+            and (
+            issue LIKE CONCAT('%',#{param.keyWord},'%')
+            or user_id LIKE CONCAT('%',#{param.keyWord},'%')
+            )
+        </if>
+        order by issue
+    </select>
+    <insert id="insert" parameterType="JcUserRank">
+    insert into jc_user_rank (issue, user_id, type,
+      profit_rate, win_count, lose_count, 
+      star, attention_count)
+    values (#{issue,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, #{type,jdbcType=CHAR}, 
+      #{profitRate,jdbcType=DECIMAL}, #{winCount,jdbcType=INTEGER}, #{loseCount,jdbcType=INTEGER}, 
+      #{star,jdbcType=INTEGER}, #{attentionCount,jdbcType=INTEGER})
+  </insert>
+</mapper>

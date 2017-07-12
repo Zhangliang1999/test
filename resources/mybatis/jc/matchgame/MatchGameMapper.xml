@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jy.repository.jc.matchgame.MatchGameDao">
+    <resultMap id="BaseResultMap" type="MatchGame">
+        <id column="match_game_id" property="matchGameId" jdbcType="VARCHAR"/>
+        <result column="match_id" property="matchId" jdbcType="VARCHAR"/>
+        <result column="bet_type" property="betType" jdbcType="DECIMAL"/>
+        <result column="data1" property="data1" jdbcType="VARCHAR"/>
+        <result column="data2" property="data2" jdbcType="VARCHAR"/>
+        <result column="data3" property="data3" jdbcType="VARCHAR"/>
+        <result column="sort" property="sort" jdbcType="INTEGER"/>
+        <result column="match_result" property="matchResult" jdbcType="DECIMAL"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        match_game_id, match_id, bet_type, data1, data2, data3, sort, match_result
+    </sql>
+    <select id="find" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        *
+        from jc_match_game
+        where match_game_id = #{matchGameId,jdbcType=VARCHAR}
+    </select>
+    <select id="findByPage" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        *
+        from jc_match_game
+        order by sort
+    </select>
+    <delete id="delete" parameterType="java.lang.String">
+        delete from jc_match_game
+        where match_game_id = #{matchGameId,jdbcType=VARCHAR}
+    </delete>
+    <insert id="insert" parameterType="MatchGame">
+        insert into jc_match_game (match_game_id, match_id, bet_type,
+        data1, data2, data3,
+        sort, match_result)
+        values (#{matchGameId,jdbcType=VARCHAR}, #{matchId,jdbcType=VARCHAR}, #{betType,jdbcType=DECIMAL},
+        #{data1,jdbcType=VARCHAR}, #{data2,jdbcType=VARCHAR}, #{data3,jdbcType=VARCHAR},
+        #{sort,jdbcType=INTEGER}, #{matchResult,jdbcType=DECIMAL})
+    </insert>
+    <update id="update" parameterType="MatchGame">
+        update jc_match_game
+        <set>
+            <if test="matchId != null">
+                match_id = #{matchId,jdbcType=VARCHAR},
+            </if>
+            <if test="betType != null">
+                bet_type = #{betType,jdbcType=DECIMAL},
+            </if>
+            <if test="data1 != null">
+                data1 = #{data1,jdbcType=VARCHAR},
+            </if>
+            <if test="data2 != null">
+                data2 = #{data2,jdbcType=VARCHAR},
+            </if>
+            <if test="data3 != null">
+                data3 = #{data3,jdbcType=VARCHAR},
+            </if>
+            <if test="sort != null">
+                sort = #{sort,jdbcType=INTEGER},
+            </if>
+            <if test="matchResult != null">
+                match_result = #{matchResult,jdbcType=DECIMAL},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=DECIMAL},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=DECIMAL},
+            </if>
+        </set>
+        where match_game_id = #{matchGameId,jdbcType=VARCHAR}
+    </update>
+
+    <delete id="deleteItems" parameterType="java.lang.String">
+        DELETE FROM JC_MATCH_GAME
+        WHERE match_id=#{matchId}
+    </delete>
+    <insert id="insertItems" parameterType="java.util.List">
+        INSERT INTO JC_MATCH_GAME
+        (dictId,value,name,sort)
+        VALUES
+        <foreach item="o" collection="list"  separator="," >
+            (#{o.dictId},#{o.value},#{o.name},#{o.sort})
+        </foreach>
+        insert into jc_match_game (match_game_id, match_id, bet_type,
+        data1, data2, data3,
+        sort, match_result)
+        values
+        <foreach collection="list" item="o" separator=",">
+        (#{o.matchGameId,jdbcType=VARCHAR}, #{o.matchId,jdbcType=VARCHAR}, #{o.betType,jdbcType=DECIMAL},
+        #{o.data1,jdbcType=VARCHAR}, #{o.data2,jdbcType=VARCHAR}, #{o.data3,jdbcType=VARCHAR},
+        #{o.sort,jdbcType=INTEGER}, #{o.matchResult,jdbcType=DECIMAL})
+        </foreach>
+    </insert>
+
+</mapper>

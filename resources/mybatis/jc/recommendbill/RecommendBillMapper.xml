@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jy.repository.jc.recommendbill.RecommendBillDao" >
+  <resultMap id="BaseResultMap" type="RecommendBill" >
+    <id column="recommend_id" property="recommendId" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="bunch" property="bunch" jdbcType="VARCHAR" />
+    <result column="price" property="price" jdbcType="INTEGER" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="reason" property="reason" jdbcType="VARCHAR" />
+    <result column="match_type" property="matchType" jdbcType="DECIMAL" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="profit_rate" property="profitRate" jdbcType="DECIMAL" />
+  </resultMap>
+    <!--用户购买推荐单-->
+    <resultMap id="buyBase" type="UserRecommendRel" >
+        <result column="account_log_id" property="accountLogId" jdbcType="VARCHAR" />
+        <result column="recommend_id" property="recommendId" jdbcType="VARCHAR" />
+        <result column="user_id" property="userId" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    </resultMap>
+
+  <sql id="Base_Column_List" >
+    recommend_id, user_id, bunch, price, title, reason, match_type, create_time, update_time,
+    profit_rate
+  </sql>
+  <select id="find" resultMap="BaseResultMap" parameterType="RecommendBill" >
+    select
+      *
+    from jc_recommend_bill
+    where recommend_id = #{recommendId,jdbcType=VARCHAR}
+  </select>
+    <select id="findByPage" resultMap="BaseResultMap" parameterType="RecommendBill" >
+        select
+        a.*,b.mobile,b.nick_name
+        from jc_recommend_bill a, jc_user b
+        where a.user_id=b.user_id
+        <if test="param.matchType != null">
+            and a.match_type=#{param.matchType}
+        </if>
+        <if test="param.state != null">
+            and a.state=#{param.state}
+        </if>
+        <if test="param.keyWord != null">
+            and (
+            a.recommend_id LIKE CONCAT('%',#{param.keyWord},'%')
+            or a.title LIKE CONCAT('%',#{param.keyWord},'%')
+            or a.reason LIKE CONCAT('%',#{param.keyWord},'%')
+            or b.mobile LIKE CONCAT('%',#{param.keyWord},'%')
+            or b.nick_name LIKE CONCAT('%',#{param.keyWord},'%')
+            )
+        </if>
+    </select>
+  <delete id="delete" parameterType="RecommendBill" >
+    delete from jc_recommend_bill
+    where recommend_id = #{recommendId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="RecommendBill" >
+    insert into jc_recommend_bill (recommend_id, user_id, bunch,
+      price, title, reason, 
+      match_type, create_time, update_time, 
+      profit_rate)
+    values (#{recommendId,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, #{bunch,jdbcType=VARCHAR}, 
+      #{price,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{reason,jdbcType=VARCHAR}, 
+      #{matchType,jdbcType=DECIMAL}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{profitRate,jdbcType=DECIMAL})
+  </insert>
+  <update id="update" parameterType="RecommendBill" >
+    update jc_recommend_bill
+    <set >
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="bunch != null" >
+        bunch = #{bunch,jdbcType=VARCHAR},
+      </if>
+      <if test="price != null" >
+        price = #{price,jdbcType=INTEGER},
+      </if>
+      <if test="state != null" >
+        state = #{state,jdbcType=INTEGER},
+      </if>
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="reason != null" >
+        reason = #{reason,jdbcType=VARCHAR},
+      </if>
+      <if test="matchType != null" >
+        match_type = #{matchType,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="profitRate != null" >
+        profit_rate = #{profitRate,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where recommend_id = #{recommendId,jdbcType=VARCHAR}
+  </update>
+    <!-- 购买列表 -->
+    <select id="findBuyByPage" resultMap="buyBase" parameterType="UserRecommendRel" >
+        select *
+        from jc_user_recommend_rel
+        where 1=1
+        <if test="param.recommendId != null">
+            and recommend_id=#{param.recommendId}
+        </if>
+    </select>
+</mapper>

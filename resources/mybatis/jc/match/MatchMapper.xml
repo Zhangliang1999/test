@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jy.repository.jc.match.MatchDao">
+    <resultMap id="BaseResultMap" type="Match">
+        <id column="match_id" property="matchId" jdbcType="VARCHAR"/>
+        <result column="comp_id" property="compId" jdbcType="VARCHAR"/>
+        <result column="cc_no" property="ccNo" jdbcType="VARCHAR"/>
+        <result column="begintime" property="begintime" jdbcType="TIMESTAMP"/>
+        <result column="endtime" property="endtime" jdbcType="TIMESTAMP"/>
+        <result column="deadline" property="deadline" jdbcType="TIMESTAMP"/>
+        <result column="team_id1" property="teamId1" jdbcType="VARCHAR"/>
+        <result column="team_id2" property="teamId2" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="is_valid" property="isValid" jdbcType="DECIMAL"/>
+        <result column="oper_id" property="operId" jdbcType="VARCHAR"/>
+        <result column="comp_name" property="compName" jdbcType="VARCHAR"/>
+        <result column="match_type" property="matchType" jdbcType="DECIMAL"/>
+        <result column="match_result" property="matchResult" jdbcType="DECIMAL"/>
+        <result column="score" property="score" jdbcType="DECIMAL"/>
+    </resultMap>
+
+
+    <resultMap id="findBaseResultMap" type="Match">
+        <id column="match_id" property="matchId" jdbcType="VARCHAR"/>
+        <result column="comp_id" property="compId" jdbcType="VARCHAR"/>
+        <result column="cc_no" property="ccNo" jdbcType="VARCHAR"/>
+        <result column="begintime" property="begintime" jdbcType="TIMESTAMP"/>
+        <result column="endtime" property="endtime" jdbcType="TIMESTAMP"/>
+        <result column="deadline" property="deadline" jdbcType="TIMESTAMP"/>
+        <result column="team_id1" property="teamId1" jdbcType="VARCHAR"/>
+        <result column="team_id2" property="teamId2" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="is_valid" property="isValid" jdbcType="DECIMAL"/>
+        <result column="oper_id" property="operId" jdbcType="VARCHAR"/>
+        <result column="comp_name" property="compName" jdbcType="VARCHAR"/>
+        <result column="match_type" property="matchType" jdbcType="DECIMAL"/>
+        <result column="match_result" property="matchResult" jdbcType="DECIMAL"/>
+        <result column="score" property="score" jdbcType="DECIMAL"/>
+        <collection property="items" column="match_id" ofType="MatchGame" select="getItems"/>
+    </resultMap>
+
+
+    <!--玩法-->
+    <resultMap id="baseItem" type="MatchGame">
+        <id column="match_game_id" property="matchGameId" jdbcType="VARCHAR"/>
+        <result column="match_id" property="matchId" jdbcType="VARCHAR"/>
+        <result column="bet_type" property="betType" jdbcType="DECIMAL"/>
+        <result column="data1" property="data1" jdbcType="VARCHAR"/>
+        <result column="data2" property="data2" jdbcType="VARCHAR"/>
+        <result column="data3" property="data3" jdbcType="VARCHAR"/>
+        <result column="sort" property="sort" jdbcType="INTEGER"/>
+        <result column="match_result" property="matchResult" jdbcType="DECIMAL"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    match_id, comp_id, cc_no, begintime, endtime, deadline, team_id1, team_id2,
+    create_time, update_time, is_valid, oper_id,score,match_result
+  </sql>
+    <select id="find" resultMap="findBaseResultMap" parameterType="Match">
+        select
+        a.*,ifnull(b.comp_name_abbr, b.comp_name) comp_name,b.match_type
+        from jc_match a, jc_match_dict b
+        where a.comp_id = b.comp_id
+        and match_id = #{matchId,jdbcType=VARCHAR}
+    </select>
+    <!--统计相同赛事，场次号的个数, 排除自己-->
+    <select id="countMatch" resultType="int" parameterType="Match">
+        select count(*)
+        from jc_match
+        where comp_id = #{compId} and cc_no = ${ccNo}
+        <if test="matchId != null">
+            and match_id != #{matchId}
+        </if>
+    </select>
+
+    <select id="findByPage" resultMap="BaseResultMap" parameterType="Match">
+        select
+        a.*, ifnull(b.comp_name_abbr, b.comp_name) comp_name,b.match_type
+        from jc_match a, jc_match_dict b
+        where a.comp_id = b.comp_id AND b.is_valid=1
+        <if test="param.isValid != null">
+            and a.`is_valid` = #{param.isValid}
+        </if>
+        <if test="param.matchResult == 0">
+            and a.`match_result` IS NULL
+        </if>
+        <if test="param.matchResult == 1">
+            and a.`match_result` IS NOT NULL
+        </if>
+        <if test="param.matchType != null">
+            and b.match_type = #{param.matchType}
+        </if>
+        <if test="param.keyWord != null and param.keyWord != ''">
+            and (
+            a.match_id LIKE CONCAT('%',#{param.keyWord},'%')
+            or a.comp_id LIKE CONCAT('%',#{param.keyWord},'%')
+            or a.cc_no LIKE CONCAT('%',#{param.keyWord},'%')
+            or a.team_id1 LIKE CONCAT('%',#{param.keyWord},'%')
+            or a.team_id2 LIKE CONCAT('%',#{param.keyWord},'%')
+            or b.comp_name LIKE CONCAT('%',#{param.keyWord},'%')
+            )
+        </if>
+        <if test="param.searchStartTime != null and param.searchStartTime != '' ">
+            AND DATE_FORMAT(a.begintime, '%Y-%m-%d') &gt;=  #{param.searchStartTime}
+        </if>
+        <if test="param.searchEndTime != null and param.searchEndTime != ''">
+            AND DATE_FORMAT(a.begintime, '%Y-%m-%d') &lt;=  #{param.searchEndTime}
+        </if>
+        order by a.order_id desc
+    </select>
+    <delete id="delete" parameterType="Match">
+    delete from jc_match
+    where match_id = #{matchId,jdbcType=VARCHAR}
+  </delete>
+    <insert id="insert" parameterType="Match">
+    insert into jc_match (match_id, comp_id, cc_no,
+      begintime, endtime, deadline,
+      team_id1, team_id2,
+      create_time, update_time, is_valid,
+      oper_id)
+    values (#{matchId,jdbcType=VARCHAR}, #{compId,jdbcType=VARCHAR}, #{ccNo,jdbcType=VARCHAR},
+      #{begintime,jdbcType=TIMESTAMP}, #{endtime,jdbcType=TIMESTAMP}, #{deadline,jdbcType=TIMESTAMP},
+      #{teamId1,jdbcType=VARCHAR}, #{teamId2,jdbcType=VARCHAR},
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{isValid,jdbcType=DECIMAL},
+      #{operId,jdbcType=VARCHAR})
+  </insert>
+    <update id="update" parameterType="Match">
+        update jc_match
+        <set>
+            <if test="compId != null">
+                comp_id = #{compId,jdbcType=VARCHAR},
+            </if>
+            <if test="ccNo != null">
+                cc_no = #{ccNo,jdbcType=VARCHAR},
+            </if>
+            <if test="begintime != null">
+                begintime = #{begintime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="endtime != null">
+                endtime = #{endtime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="deadline != null">
+                deadline = #{deadline,jdbcType=TIMESTAMP},
+            </if>
+            <if test="teamId1 != null">
+                team_id1 = #{teamId1,jdbcType=VARCHAR},
+            </if>
+            <if test="teamId2 != null">
+                team_id2 = #{teamId2,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isValid != null">
+                is_valid = #{isValid,jdbcType=DECIMAL},
+            </if>
+            <if test="operId != null">
+                oper_id = #{operId,jdbcType=VARCHAR},
+            </if>
+            <if test="score != null">
+                score = #{score,jdbcType=VARCHAR},
+            </if>
+            <if test="matchResult != null">
+                match_result = #{matchResult,jdbcType=VARCHAR},
+            </if>
+            <if test="sumscore != null">
+                sumscore = #{sumscore,jdbcType=INTEGER},
+            </if>
+        </set>
+        where match_id = #{matchId,jdbcType=VARCHAR}
+    </update>
+
+    <!--删除比赛玩法-->
+    <delete id="deleteItems" parameterType="java.lang.String">
+        DELETE FROM jc_match_game
+        WHERE match_id=#{matchId,jdbcType=VARCHAR}
+    </delete>
+    <insert id="insertItems" parameterType="java.util.List">
+        insert into jc_match_game (match_game_id, match_id, bet_type,
+        data1, data2, data3,
+        sort, match_result)
+        values
+        <foreach item="o" collection="list" separator=",">
+
+            (#{o.matchGameId,jdbcType=VARCHAR}, #{o.matchId,jdbcType=VARCHAR}, #{o.betType,jdbcType=DECIMAL},
+            #{o.data1,jdbcType=VARCHAR}, #{o.data2,jdbcType=VARCHAR}, #{o.data3,jdbcType=VARCHAR},
+            #{o.sort,jdbcType=INTEGER}, #{o.matchResult,jdbcType=DECIMAL})
+        </foreach>
+    </insert>
+
+    <select id="getItems" resultMap="baseItem" parameterType="java.lang.String">
+        select *
+        from jc_match_game
+        where match_id = #{matchId,jdbcType=VARCHAR}
+        order by sort
+    </select>
+</mapper>

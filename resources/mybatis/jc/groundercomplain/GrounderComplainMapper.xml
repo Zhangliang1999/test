@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jy.repository.jc.groundercomplain.GrounderComplainDao">
+    <resultMap id="BaseResultMap" type="GrounderComplain">
+        <id column="complain_id" property="complainId" jdbcType="VARCHAR"/>
+        <result column="grounder_id" property="grounderId" jdbcType="VARCHAR"/>
+        <result column="compained_user_id" property="compainedUserId" jdbcType="VARCHAR"/>
+        <result column="user_id" property="userId" jdbcType="VARCHAR"/>
+        <result column="state" property="state" jdbcType="DECIMAL"/>
+        <result column="reply_content" property="replyContent" jdbcType="VARCHAR"/>
+        <result column="oper_id" property="operId" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    complain_id, grounder_id, compained_user_id, user_id, state, reply_content, oper_id,
+    create_time, update_time
+    </sql>
+    <select id="find" resultMap="BaseResultMap" parameterType="GrounderComplain">
+        select
+        <include refid="Base_Column_List"/>
+        from jc_grounder_complain
+        where complain_id = #{complainId,jdbcType=VARCHAR}
+    </select>
+    <select id="findByPage" resultMap="BaseResultMap" parameterType="GrounderComplain">
+        select
+        <include refid="Base_Column_List"/>
+        from jc_grounder_complain
+        where 1=1
+        <if test="param.state != null">
+            and state=#{param.state}
+        </if>
+        <if test="param.keyWord != null">
+            and (
+            reply_content LIKE CONCAT('%',#{param.keyWord},'%')
+            )
+        </if>
+    </select>
+    <delete id="delete" parameterType="GrounderComplain">
+        delete from jc_grounder_complain
+        where complain_id = #{complainId,jdbcType=VARCHAR}
+    </delete>
+    <insert id="insert" parameterType="GrounderComplain">
+       insert into jc_grounder_complain (complain_id, grounder_id, compained_user_id,
+      user_id, state, reply_content,
+      oper_id, create_time, update_time
+      )
+    values (#{complainId,jdbcType=VARCHAR}, #{grounderId,jdbcType=VARCHAR}, #{compainedUserId,jdbcType=VARCHAR},
+      #{userId,jdbcType=VARCHAR}, #{state,jdbcType=DECIMAL}, #{replyContent,jdbcType=VARCHAR},
+      #{operId,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      )
+    </insert>
+    <update id="update" parameterType="GrounderComplain">
+        update jc_grounder_complain
+        <set >
+            <if test="grounderId != null" >
+                grounder_id = #{grounderId,jdbcType=VARCHAR},
+            </if>
+            <if test="compainedUserId != null" >
+                compained_user_id = #{compainedUserId,jdbcType=VARCHAR},
+            </if>
+            <if test="userId != null" >
+                user_id = #{userId,jdbcType=VARCHAR},
+            </if>
+            <if test="state != null" >
+                state = #{state,jdbcType=DECIMAL},
+            </if>
+            <if test="replyContent != null" >
+                reply_content = #{replyContent,jdbcType=VARCHAR},
+            </if>
+            <if test="operId != null" >
+                oper_id = #{operId,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null" >
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null" >
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where complain_id = #{complainId,jdbcType=VARCHAR}
+    </update>
+</mapper>

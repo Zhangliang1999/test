@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jy.repository.jc.betbill.BetBillDao" >
+  <resultMap id="BaseResultMap" type="BetBill" >
+    <id column="bet_id" property="betId" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="account_log_id" property="accountLogId" jdbcType="VARCHAR" />
+    <result column="amount" property="amount" jdbcType="INTEGER" />
+    <result column="items" property="items" jdbcType="INTEGER" />
+    <result column="bonus" property="bonus" jdbcType="DECIMAL" />
+    <result column="bunch" property="bunch" jdbcType="VARCHAR" />
+    <result column="match_type" property="matchType" jdbcType="DECIMAL" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="iscorrect" property="iscorrect" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="realBonus" property="realBonus" jdbcType="INTEGER" />
+  </resultMap>
+
+    <resultMap id="detailMap" type="BetDetail" >
+        <result column="order_id" property="orderId" jdbcType="CHAR" />
+        <result column="bet_id" property="betId" jdbcType="VARCHAR" />
+        <result column="match_id" property="matchId" jdbcType="VARCHAR" />
+        <result column="match_game_id" property="matchGameId" jdbcType="VARCHAR" />
+        <result column="bet_select" property="betSelect" jdbcType="VARCHAR" />
+        <result column="state" property="state" jdbcType="DECIMAL" />
+        <result column="bet_type" property="betType" jdbcType="DECIMAL" />
+    </resultMap>
+
+
+  <sql id="Base_Column_List" >
+    bet_id, user_id, account_log_id, amount, items, bonus, bunch, match_type, status,
+    iscorrect, create_time, update_time
+  </sql>
+  <select id="find" resultMap="BaseResultMap" parameterType="BetBill" >
+    select
+    <include refid="Base_Column_List" />
+    from jc_bet_bill
+    where bet_id = #{betId,jdbcType=VARCHAR}
+  </select>
+    <select id="findByPage" resultMap="BaseResultMap" parameterType="BetBill" >
+        select a.*, b.mobile, b.nick_name, c.bonus realBonus
+        from jc_bet_bill a join jc_user b on a.user_id=b.user_id
+         left join jc_bet_winner c on a.bet_id=c.bet_id
+        where 1 = 1
+        <if test="param.matchType != null">
+            and a.match_type=#{param.matchType}
+        </if>
+        <if test="param.iscorrect != null">
+            and a.iscorrect=#{param.iscorrect}
+        </if>
+        <if test="param.status != null">
+            and a.status=#{param.status}
+        </if>
+        <if test="param.keyWord != null">
+            AND (
+            a.bet_id LIKE CONCAT('%',#{param.keyWord},'%')
+            OR a.user_id LIKE CONCAT('%',#{param.keyWord},'%')
+            OR a.account_log_id LIKE CONCAT('%',#{param.keyWord},'%')
+            OR b.mobile LIKE CONCAT('%',#{param.keyWord},'%')
+            OR b.nick_name LIKE CONCAT('%',#{param.keyWord},'%')
+            )
+        </if>
+        order by a.create_time desc,a.update_time desc
+    </select>
+  <delete id="delete" parameterType="BetBill" >
+    delete from jc_bet_bill
+    where bet_id = #{betId,jdbcType=VARCHAR}
+  </delete>
+    <delete id="deleteBatch" parameterType="java.util.List" >
+        delete from jc_bet_bill
+        where bet_id in (
+        <foreach item="o" collection="list" open="" separator=","
+                 close="">
+            #{o.betId}
+        </foreach>
+        )
+    </delete>
+  <insert id="insert" parameterType="BetBill" >
+    insert into jc_bet_bill (bet_id, user_id, account_log_id,
+      amount, items, bonus, 
+      bunch, match_type, status, 
+      iscorrect, create_time, update_time
+      )
+    values (#{betId,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, #{accountLogId,jdbcType=VARCHAR}, 
+      #{amount,jdbcType=INTEGER}, #{items,jdbcType=INTEGER}, #{bonus,jdbcType=DECIMAL}, 
+      #{bunch,jdbcType=VARCHAR}, #{matchType,jdbcType=DECIMAL}, #{status,jdbcType=INTEGER}, 
+      #{iscorrect,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <update id="update" parameterType="BetBill" >
+    update jc_bet_bill
+    set user_id = #{userId,jdbcType=VARCHAR},
+      account_log_id = #{accountLogId,jdbcType=VARCHAR},
+      amount = #{amount,jdbcType=INTEGER},
+      items = #{items,jdbcType=INTEGER},
+      bonus = #{bonus,jdbcType=DECIMAL},
+      bunch = #{bunch,jdbcType=VARCHAR},
+      match_type = #{matchType,jdbcType=DECIMAL},
+      status = #{status,jdbcType=INTEGER},
+      iscorrect = #{iscorrect,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where bet_id = #{betId,jdbcType=VARCHAR}
+  </update>
+    <!--竟猜明细-->
+    <select id="findBillDetailByPage" resultMap="detailMap"  parameterType="BetDetail">
+      SELECT * FROM jc_bet_detail a, jc_match_game b WHERE a.match_game_id=b.match_game_id
+       and bet_id=#{param.betId,jdbcType=VARCHAR}
+    </select>
+</mapper>

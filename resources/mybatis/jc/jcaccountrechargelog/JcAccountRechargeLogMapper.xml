@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jy.repository.jc.jcaccountrechargelog.JcAccountRechargeLogDao" >
+    <resultMap id="BaseResultMap" type="JcAccountRechargeLog" >
+        <id column="account_log_id" property="accountLogId" jdbcType="VARCHAR" />
+        <result column="pay_log_id" property="payLogId" jdbcType="VARCHAR" />
+        <result column="pay_type" property="payType" jdbcType="DECIMAL" />
+        <result column="money" property="money" jdbcType="INTEGER" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    </resultMap>
+    <resultMap id="rechargeViewMap" type="JcAccountRechargeView" >
+        <result column="account_log_id" property="accountLogId" jdbcType="VARCHAR" />
+        <result column="account_id" property="accountId" jdbcType="VARCHAR" />
+        <result column="user_id" property="userId" jdbcType="VARCHAR" />
+        <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+        <result column="nick_name" property="nickName" jdbcType="VARCHAR" />
+        <result column="balance" property="balance" jdbcType="INTEGER" />
+        <result column="money" property="money" jdbcType="INTEGER" />
+        <result column="pay_type" property="payType" jdbcType="DECIMAL" />
+        <result column="pay_log_id" property="payLogId" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    </resultMap>
+
+    <resultMap id="withdrawViewMap" type="JcAccountWithdrawView" >
+        <result column="account_log_id" property="accountLogId" jdbcType="VARCHAR" />
+        <result column="account_id" property="accountId" jdbcType="VARCHAR" />
+        <result column="user_id" property="userId" jdbcType="VARCHAR" />
+        <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+        <result column="nick_name" property="nickName" jdbcType="VARCHAR" />
+        <result column="balance" property="balance" jdbcType="INTEGER" />
+        <result column="money" property="money" jdbcType="INTEGER" />
+        <result column="withdraw_type" property="withdrawType" jdbcType="DECIMAL" />
+        <result column="withdraw_log_id" property="withdrawLogId" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    </resultMap>
+
+
+    <sql id="Base_Column_List" >
+        account_log_id, pay_log_id, pay_type, money, create_time, update_time
+    </sql>
+    <select id="find" resultMap="BaseResultMap" parameterType="JcAccountRechargeLog" >
+        select
+        <include refid="Base_Column_List" />
+        from jc_account_recharge_log
+        where account_log_id = #{accountLogId,jdbcType=VARCHAR}
+    </select>
+    <select id="findByPage" resultMap="BaseResultMap" parameterType="JcAccountRechargeLog" >
+        select
+        <include refid="Base_Column_List" />
+        from jc_account_recharge_log
+        where 1=1
+        <if test="param.payType != null">
+            and pay_type=#{param.payType}
+        </if>
+        <if test="param.keyWord != null">
+            and (
+            account_log_id LIKE CONCAT('%',#{param.keyWord},'%')
+            or account_id LIKE CONCAT('%',#{param.keyWord},'%')
+            )
+        </if>
+    </select>
+    <!--充值-->
+    <select id="findRechargeViewByPage" resultMap="rechargeViewMap" parameterType="JcAccountRechargeView" >
+        select *  from jc_account_recharge_view
+        where 1=1
+        <if test="param.payType != null">
+            and pay_type=#{param.payType}
+        </if>
+        <if test="param.keyWord != null">
+            and (
+            account_log_id LIKE CONCAT('%',#{param.keyWord},'%')
+            or account_id LIKE CONCAT('%',#{param.keyWord},'%')
+            )
+        </if>
+        order by create_time DESC
+    </select>
+    <!--提现-->
+    <select id="findWithdrawViewByPage" resultMap="withdrawViewMap" parameterType="JcAccountWithdrawView" >
+        select *  from jc_account_withdraw_view
+        where 1=1
+        <if test="param.withdrawType != null">
+            and withdraw_type=#{param.withdrawType}
+        </if>
+        <if test="param.keyWord != null">
+            and (
+            account_log_id LIKE CONCAT('%',#{param.keyWord},'%')
+            or account_id LIKE CONCAT('%',#{param.keyWord},'%')
+            )
+        </if>
+        order by create_time DESC
+    </select>
+</mapper>

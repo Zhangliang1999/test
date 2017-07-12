@@ -1,0 +1,191 @@
+/*****************宸ョ缁忕悊****************/
+.listJob,.listJob2{
+	background: #fff;
+	margin-bottom:0.469rem;
+	margin-bottom:5px;
+	position: relative;
+	font-size: 0.750rem;
+}
+.content_all textarea{
+	display: block;
+}
+.content_all .pro+textarea{
+	border: 0;
+	min-height:80px;
+	padding-left:0;
+	color:#333;
+	font-size: .6rem;
+}
+
+
+/*宸ョ缁忕悊2*/
+.listJob2{
+	padding: .375rem 0;
+	padding: .16rem 0;
+}
+.listJob2 label{
+	width: 80%;
+	line-height: 0.984rem;
+}
+.listJob2 .uname{
+	margin-left:0 !important;
+}
+.listJob2 .r_name{
+	position: absolute;
+	right:28px !important;
+	top:50%;
+	transform: translate(0,-50%);
+	-webkit-transform: translate(0,-50%);
+	right: 1rem;
+	color:#333333;
+	font-size: 0.560rem;
+}
+.listJob2 .mui-input-row:after{
+	font-family: Muiicons;
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 1;
+    position: absolute;
+    top: 50%;
+    display: inline-block;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+    text-decoration: none;
+    color: #bbb;
+    -webkit-font-smoothing: antialiased;
+    right: 10px;
+    content: '\e583';
+    margin-top: 1px;
+}
+.listJob2 .mui-input-row .uname{
+	width:100% !important;
+}
+
+
+/*宸ョ缁忕悊3*/
+.listJob:first{
+	marginp-top:0.625em;
+}
+.listJob .mui-input-row .lf_img{
+	display: inline-block;
+	width:1.200rem;
+	height:1.200rem;
+	border-radius: 50%;
+	overflow: hidden;
+	vertical-align: middle;
+}
+.listJob .mui-input-row .lf_img img{
+	border-radius: 50%;
+}
+.listJob .mui-input-row .uname{
+	color:#666;
+	vertical-align: middle;
+	margin-left:0.375rem;
+	white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: inline-block;
+    width: 60%;
+    line-height: initial;
+    font-size: 0.600rem;
+    font-family: "寰蒋闆呴粦";
+}
+.listJob .mui-input-row .uname.utitle{
+	margin-left:0;
+}
+.listJob .mui-checkbox input[type=checkbox]:before,
+.listJob .mui-radio input[type=radio]:before{
+	font-size: 1.200rem;
+}
+.listJob .mui-checkbox input[type=checkbox], 
+.listJob .mui-radio input[type=radio]{
+   top: 50%;
+   transform: translateY(-50%);
+   -webkit-transform: translateY(-50%);
+}
+.listJob .mui-checkbox input[type=checkbox]:checked:before,
+.listJob .mui-radio input[type=radio]:checked:before{
+	color: #8ec661;
+}
+.listJob .mui-checkbox input[type=checkbox]:before {
+    content: '\e442';
+}
+.listJob .mui-checkbox input[type=checkbox]:before, 
+.listJob .mui-radio input[type=radio]:before{
+	color:#d6dadd;
+}
+.listJob .mui-checkbox input[type=checkbox]{
+	right:1.15rem;
+	right:0.400rem;
+}
+
+/*宸ョ缁忕悊4*/
+.jobmanager_area{
+	height: 9.800rem;
+	border:0;
+}
+.jobmanager_area_button{
+	background-color: #008a81;
+	text-align: center;
+	color: #fff;
+	border-radius: 4px;
+	padding:0.480rem;
+	    width: 98%;
+    margin: 0 auto;
+        margin-top: 1.800rem;
+}
+.jobmanager_area_button:active{
+	background: #006e67;
+}
+
+
+.service_evaluation{
+	background:#fff;
+	margin-bottom:.4rem;
+	margin-bottom:5px;
+	padding:1rem;
+	font-size: 0.680rem;
+}
+.appraise{color:#333333;}
+.service_r{
+	position: relative;
+	padding-right:1.734rem;
+}
+.service_r span{
+	color:#109ffd;
+}
+.service_r.on span{
+	color:#fcac00;
+}
+.start_work{
+	background: #fff;
+    padding: 18px 15px;
+    border-radius: 4px;
+}
+.start_work_pro{
+	padding-top: 0;
+    padding-bottom: 0;
+}
+.start_work li{
+	float: left;
+	padding-right:20px;
+}
+.start_work img{
+	max-width:initial !important;
+}
+.sdtop0.deltop{
+	margin-right:0.938em;
+	position: relative;
+	margin-bottom:0.938em;
+}
+.sdtop0 .del{
+	background:url(../images/del.png) no-repeat;
+	background-size: 100%;
+	display: inline-block;
+	width:22px;
+	height:22px;
+	position: absolute;
+	right:-10px;
+	top:-10px;
+	    z-index: 8;
+}
